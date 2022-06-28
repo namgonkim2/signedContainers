@@ -1,0 +1,43 @@
+name: Login and Push Image
+on:
+  push:
+    branches: [ "main" ]
+  # 수동으로 트리거줄때 해당 명령어
+  workflow_dispatch:
+
+env:
+  REGISTRY_URL: demo.goharbor.io
+  REGISTRY_USER: admin
+  REGISTRY_PASSWORD: Harbor12345
+
+jobs:
+  build:
+    name: Login and Push Image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      # login to harbor
+      - name: Login to Harbor
+        id: login-harbor
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ env.REGISTRY_URL }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+      # pull and tag image
+      - name: Pull & Tag image
+        id: pull-image
+        run: |
+          podman pull docker.io/nginx:latest
+          podman tag docker.io/nginx:latest ${{ env.REGISTRY_URL }}/library/nginx:latest
+      # push to registry
+      - name: Push to Harbor
+        id: push-harbor
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: nginx
+          tags: latest
+          registry: ${{ env.REGISTRY_URL }}/library
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
