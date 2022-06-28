@@ -30,7 +30,7 @@ jobs:
         id: push-harbor
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: docker.io/busybox
+          image: busybox
           tags: latest
           registry: ${{ env.REGISTRY_URL }}/library
           username: ${{ env.REGISTRY_USER }}
