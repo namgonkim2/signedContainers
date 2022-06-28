@@ -14,4 +14,4 @@ jobs:
         with:
           registry: demo.goharbor.io
           username: admin
-          password: admin
+          password: Harbor12345
