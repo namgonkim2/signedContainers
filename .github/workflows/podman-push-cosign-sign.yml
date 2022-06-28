@@ -1,4 +1,4 @@
-name: Login and Push Image
+name: Image push and sign
 on:
   # push:
   #   branches: [ "main" ]
@@ -6,12 +6,12 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY_URL: demo.goharbor.io
+  REGISTRY: demo.goharbor.io
   REGISTRY_USER: admin
   REGISTRY_PASSWORD: Harbor12345
 
 jobs:
-  push:
+  build:
     name: Login and Push Image
     runs-on: ubuntu-latest
     steps:
@@ -22,7 +22,7 @@ jobs:
         id: login-harbor
         uses: redhat-actions/podman-login@v1
         with:
-          registry: ${{ env.REGISTRY_URL }}
+          registry: ${{ env.REGISTRY }}
           username: ${{ env.REGISTRY_USER }}
           password: ${{ env.REGISTRY_PASSWORD }}
       # Build Image - we use pull
@@ -37,6 +37,22 @@ jobs:
         with:
           image: nginx
           tags: latest
-          registry: ${{ env.REGISTRY_URL }}/library
+          registry: ${{ env.REGISTRY }}/library
           username: ${{ env.REGISTRY_USER }}
           password: ${{ env.REGISTRY_PASSWORD }}
+      # cosign installer
+      - name: Cosign Installer
+        uses: sigstore/cosign-installer@main
+      # github actions secret에 있는 cosign key를 disk에 write
+      - name: Write signing key to disk
+        run: 'echo "$KEY" > cosign.key'
+        shell: bash
+        env:
+          KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+      # cosign sign image
+      - name: Sign container image
+        run: |
+          cosign sign --key cosign.key ${{ env.REGISTRY }}/library/nginx:latest
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
