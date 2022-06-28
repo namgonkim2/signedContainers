@@ -46,11 +46,9 @@ jobs:
       # github actions secret에 있는 cosign key를 disk에 write
       - name: Write signing key to disk
         run: |
-          echo $KEY > cosign.key
+          echo ${{ secrets.COSIGN_PRIVATE_KEY }} > cosign.key
           cat cosign.key
         shell: bash
-        env:
-          KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
       # cosign sign image
       - name: Sign container image
         run: |
