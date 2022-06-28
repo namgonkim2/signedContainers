@@ -12,6 +12,6 @@ jobs:
         name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          registry: harbor.192.168.9.78.nip.io:30443
+          registry: demo.goharbor.io
           username: admin
           password: Harbor12345
