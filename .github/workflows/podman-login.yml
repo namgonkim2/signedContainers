@@ -1,0 +1,23 @@
+name: Login to Harbor use podman
+on:
+  push:
+    branches: [ "main" ]
+  # 수동으로 트리거줄때 해당 명령어
+  workflow_dispatch:
+
+env:
+  REGISTRY_URL: demo.goharbor.io
+  REGISTRY_USER: admin
+  REGISTRY_PASSWORD: Harbor12345
+
+jobs:
+  login:
+    name: Login to Harbor
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Harbor
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: ${{ env.REGISTRY_URL }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
