@@ -25,18 +25,12 @@ jobs:
           registry: ${{ env.REGISTRY_URL }}
           username: ${{ env.REGISTRY_USER }}
           password: ${{ env.REGISTRY_PASSWORD }}
-      # pull and tag image
-      - name: Pull & Tag image
-        id: pull-image
-        run: |
-          podman pull docker.io/nginx:latest
-          podman tag docker.io/nginx:latest ${{ env.REGISTRY_URL }}/library/nginx:latest
-      # push to registry
+     # push to registry
       - name: Push to Harbor
         id: push-harbor
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: nginx
+          image: docker.io/busybox
           tags: latest
           registry: ${{ env.REGISTRY_URL }}/library
           username: ${{ env.REGISTRY_USER }}
